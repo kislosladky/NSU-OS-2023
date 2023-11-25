@@ -9,14 +9,14 @@ int main()
     
     switch (pid)
     {
-    case -1: //error
+    case -1:
         perror("fork");
         exit(EXIT_FAILURE);
         break;
-    case 0: //child
+    case 0:
         execlp("cat", "cat", "1.txt", (char*) NULL);
         break;
-    default:  //parent
+    default:
         if (wait(NULL) == -1) {
             perror("wait");
             exit(EXIT_FAILURE);
