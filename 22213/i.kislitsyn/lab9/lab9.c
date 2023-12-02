@@ -14,15 +14,19 @@ int main()
         exit(EXIT_FAILURE);
         break;
     case 0: //child
-        execlp("cat", "cat", "1.txt", (char*) NULL);
+        printf("Child process\n");
+        if (execlp("cat", "cat", "1.txt", (char *)NULL) == -1) {
+            perror("exelp");
+            exit(EXIT_FAILURE);
+        }
         break;
     default:  //parent
         if (wait(NULL) == -1) {
             perror("wait");
             exit(EXIT_FAILURE);
         }
+        printf("Child process ended\n");
         break;
     }
-    printf("Child process ended\n");
     exit(EXIT_SUCCESS);
 }
