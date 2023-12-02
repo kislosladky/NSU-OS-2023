@@ -9,7 +9,7 @@ int main()
     
     switch (pid)
     {
-    case -1: //error
+    case -1:
         perror("fork");
         exit(EXIT_FAILURE);
         break;
@@ -20,7 +20,7 @@ int main()
             exit(EXIT_FAILURE);
         }
         break;
-    default:  //parent
+    default:
         if (wait(NULL) == -1) {
             perror("wait");
             exit(EXIT_FAILURE);
