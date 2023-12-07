@@ -15,10 +15,9 @@ int main()
         break;
     case 0: //child
         printf("Child process\n");
-        if (execlp("cat", "cat", "1.txt", (char *)NULL) == -1) {
-            perror("exelp");
-            exit(EXIT_FAILURE);
-        }
+        execlp("cat", "cat", "1.txt", (char *)NULL);
+        perror("exelp");
+        exit(EXIT_FAILURE);
         break;
     default:
         if (wait(NULL) == -1) {
