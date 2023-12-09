@@ -39,7 +39,7 @@ int main() {
             break;
         default:                   // parent process
             close(descriptors[0]); // closing the read end.
-            char* message = "KJGGsgksjgssLGwsg F";
+            char* message = "small BIG small BIG";
             if (write(descriptors[1], message, STR_LEN) == -1)
             {
                 perror("write");
