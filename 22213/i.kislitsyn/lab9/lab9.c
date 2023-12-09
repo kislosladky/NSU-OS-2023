@@ -8,7 +8,6 @@
 int main()
 {
     pid_t pid = fork();
-    int child_exit_status;
     switch (pid)
     {
     case -1:
