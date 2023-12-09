@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
+#define STR_LEN 20
 
 int main() {
     int descriptors[2];
@@ -20,27 +21,32 @@ int main() {
             exit(EXIT_FAILURE);
         case 0: //child process
             close(descriptors[1]); // closing the write end.
-            int read_fd = descriptors[0];
-            char ch;
-            while (read(read_fd, &ch, 1)) {
-                printf("%c", toupper(ch));
+            char read_message[STR_LEN];
+
+            if (read(descriptors[0], read_message, STR_LEN) == -1)
+            {
+                close(descriptors[0]);
+                perror("read");
+                exit(EXIT_FAILURE);
+            }
+
+            for (int i = 0; i < STR_LEN; i++)
+            {
+                printf("%c", toupper(read_message[i]));
             }
             printf("\n");
-            close(read_fd);
+            close(descriptors[0]);
             break;
         default:                   // parent process
             close(descriptors[0]); // closing the read end.
-            int write_fd = descriptors[1];
-            char* message = "KJGGsgksjgssLGwsg F\0";
-            for (char* pointer = message; *pointer != '\0'; pointer++)
+            char* message = "KJGGsgksjgssLGwsg F";
+            if (write(descriptors[1], message, STR_LEN) == -1)
             {
-                if(write(write_fd, pointer, 1) == 0) {
-                    perror("write");
-                    close(write_fd);
-                    exit(EXIT_FAILURE);
-                }
+                perror("write");
+                close(descriptors[1]);
+                exit(EXIT_FAILURE);
             }
-            close(write_fd);
+            close(descriptors[1]);
 
             if (waitpid(pid, NULL, 0) == -1)
             {
