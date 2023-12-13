@@ -29,13 +29,13 @@ int main() {
                 perror("read");
                 exit(EXIT_FAILURE);
             }
+            close(descriptors[0]);
 
             for (int i = 0; i < STR_LEN; i++)
             {
                 printf("%c", toupper(read_message[i]));
             }
             printf("\n");
-            close(descriptors[0]);
             break;
         default:                   // parent process
             close(descriptors[0]); // closing the read end.
