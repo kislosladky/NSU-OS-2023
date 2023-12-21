@@ -9,7 +9,8 @@
 
 int main()
 {
-    int fd[2], status;
+    int fd[2];
+    int status;
     size_t written = 0;
     pid_t pid;
     char msgout[100] = "My message";
@@ -49,14 +50,14 @@ int main()
                     exit(EXIT_FAILURE);
                 };
 
-                if ((write(0, "\n", 1)) == -1)
-                {
-                    perror("Write failure");
-                    exit(EXIT_FAILURE);
-                };
+                
             }
         } while (status > 0);
-
+        if ((write(0, "\n", 1)) == -1)
+        {
+            perror("Write failure");
+            exit(EXIT_FAILURE);
+        };
         close(fd[0]);
         break;
     default:
