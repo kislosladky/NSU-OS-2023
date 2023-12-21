@@ -1,58 +1,73 @@
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
 #include <ctype.h>
-#define STR_LEN 20
+#include <unistd.h>
+#include <string.h>
 
-int main() {
-    int descriptors[2];
-    if (pipe(descriptors) == -1) {
-        perror("pipe");
+#define MSGSIZE 23
+
+int main()
+{
+    int fd[2], status;
+    size_t written = 0;
+    pid_t pid;
+    char msgout[100] = "sSSSSSSSSSSsssssssssaaaaaaaaaaaaaaaaaaasfadf";
+    char msgin[MSGSIZE];
+
+    if (pipe(fd) == -1)
+    {
+        perror("Pipe creation failure");
         exit(EXIT_FAILURE);
     }
-    pid_t pid = fork();
-    switch (pid) {
-        case -1:
-            perror("fork");
-            close(descriptors[0]);
-            close(descriptors[1]);
-            exit(EXIT_FAILURE);
-        case 0: //child process
-            close(descriptors[1]); // closing the write end.
-            char read_message[STR_LEN];
 
-            if (read(descriptors[0], read_message, STR_LEN) == -1)
+    switch (pid = fork())
+    {
+    case -1:
+        perror("Fork failure");
+        exit(EXIT_FAILURE);
+    case 0:
+        close(fd[1]);
+
+        do
+        {
+            if ((status = read(fd[0], msgin, MSGSIZE)) == -1)
             {
-                close(descriptors[0]);
-                perror("read");
+                perror("Read failure");
+                exit(EXIT_FAILURE);
+            };
+
+            if (status != 0)
+            {
+                for (int i = 0; i < status; i++)
+                {
+                    msgin[i] = toupper(msgin[i]);
+                }
+                if ((write(0, msgin, status)) == -1)
+                {
+                    perror("Write failure");
+                    exit(EXIT_FAILURE);
+                };
+            }
+        } while (status > 0);
+
+        close(fd[0]);
+        break;
+    default:
+        close(fd[0]);
+
+        while (written < strlen(msgout))
+        {
+            size_t to_send = strlen(&msgout[written]) < MSGSIZE ? strlen(&msgout[written]) : MSGSIZE;
+            if ((status = write(fd[1], &msgout[written], to_send)) == -1)
+            {
+                perror("Write failure");
                 exit(EXIT_FAILURE);
             }
-            close(descriptors[0]);
-
-            for (int i = 0; i < STR_LEN; i++)
-            {
-                printf("%c", toupper(read_message[i]));
-            }
-            printf("\n");
-            break;
-        default:                   // parent process
-            close(descriptors[0]); // closing the read end.
-            char* message = "small BIG small BIG";
-            if (write(descriptors[1], message, STR_LEN) == -1)
-            {
-                perror("write");
-                close(descriptors[1]);
-                exit(EXIT_FAILURE);
-            }
-            close(descriptors[1]);
-
-            if (waitpid(pid, NULL, 0) == -1)
-            {
-                perror("wait");
-                exit(EXIT_FAILURE);
-            }
+            written += MSGSIZE;
+        };
+        close(fd[1]);
     }
+
     exit(EXIT_SUCCESS);
 }
