@@ -12,7 +12,7 @@ int main()
     int fd[2], status;
     size_t written = 0;
     pid_t pid;
-    char msgout[100] = "sSSSSSSSSSSsssssssssaaaaaaaaaaaaaaaaaaasfadf";
+    char msgout[100] = "My message";
     char msgin[MSGSIZE];
 
     if (pipe(fd) == -1)
@@ -44,6 +44,12 @@ int main()
                     msgin[i] = toupper(msgin[i]);
                 }
                 if ((write(0, msgin, status)) == -1)
+                {
+                    perror("Write failure");
+                    exit(EXIT_FAILURE);
+                };
+
+                if ((write(0, "\n", 1)) == -1)
                 {
                     perror("Write failure");
                     exit(EXIT_FAILURE);
