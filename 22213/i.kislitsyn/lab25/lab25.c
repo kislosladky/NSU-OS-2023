@@ -13,7 +13,7 @@ int main()
     int status;
     size_t written = 0;
     pid_t pid;
-    char* msgout = "My message";
+    char* msgout = "My messae";
     char msgin[MSGSIZE];
 
     if (pipe(fd) == -1)
