@@ -17,22 +17,21 @@ int main(int argc, char *argv[])
     switch (pid = fork())
     {
     case -1:
-        perror("fork error");
+        perror("Fork is failed");
         exit(EXIT_FAILURE);
     case 0:
         execvp(argv[1], argv + 1);
-        perror("Exec error");
+        perror("Exec is failed");
         exit(EXIT_FAILURE);
-
     default:
         if (waitpid(pid, &status, 0) == -1)
         {
-            perror("waitpid error");
+            perror("Waitpid is failed");
             exit(EXIT_FAILURE);
         }
         else
         {
-            printf("\nCode %d\n", status);
+            printf("\nThe code is %d\n", status);
         }
     }
     exit(EXIT_SUCCESS);
