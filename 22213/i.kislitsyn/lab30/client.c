@@ -75,7 +75,7 @@ void int_sig_handler()
     {
         close(fd);
     }
-    write(STDOUT_FILENO, "\nTranslation is finished\n", 22);
+    write(STDOUT_FILENO, "\nTranslation is finished\n", 27);
 
     exit(EXIT_SUCCESS);
 }
