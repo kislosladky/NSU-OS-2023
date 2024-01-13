@@ -70,7 +70,7 @@ int main()
                 exit(EXIT_FAILURE);
             }
             written += MSGSIZE;
-        };
+        }
         close(fd[1]);
     }
 
