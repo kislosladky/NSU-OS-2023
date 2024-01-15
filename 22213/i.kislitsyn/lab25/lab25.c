@@ -4,17 +4,16 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <string.h>
+#include <fcntl.h>
 
-#define MSGSIZE 23
+#define BUFF_LEN 30
 
 int main()
 {
     int fd[2];
     int status;
-    size_t written = 0;
     pid_t pid;
-    char* msgout = "My message";
-    char msgin[MSGSIZE];
+    char buffer[BUFF_LEN];
 
     if (pipe(fd) == -1)
     {
@@ -34,7 +33,7 @@ int main()
 
         do
         {
-            if ((status = read(fd[0], msgin, MSGSIZE)) == -1)
+            if ((status = read(fd[0], buffer, BUFF_LEN)) == -1)
             {
                 perror("Read failure");
                 close(fd[0]);
@@ -43,10 +42,10 @@ int main()
 
             for (int i = 0; i < status; i++)
             {
-                msgin[i] = toupper(msgin[i]);
+                buffer[i] = toupper(buffer[i]);
             }
 
-            if ((write(0, msgin, status)) == -1)
+            if ((write(0, buffer, status)) == -1)
             {
                 perror("Write failure");
                 close(fd[0]);
@@ -58,18 +57,30 @@ int main()
         break;
     default:
         close(fd[0]);
+        int file;
+        int red;
 
-        while (written < strlen(msgout))
+        if ((file = open("input.txt", O_RDONLY)) < 0)
         {
-            size_t to_send = strlen(&msgout[written]) < MSGSIZE ? strlen(&msgout[written]) : MSGSIZE;
-            if ((status = write(fd[1], &msgout[written], to_send)) == -1)
+            perror("Open error");
+            exit(EXIT_FAILURE);
+        }
+
+        while ((red = read(file, buffer, BUFF_LEN)) > 0)
+        {
+            if ((status = write(fd[1], buffer, red)) == -1)
             {
                 perror("Write failure");
                 close(fd[1]);
                 exit(EXIT_FAILURE);
             }
-            written += MSGSIZE;
         }
+        if (red == -1)
+        {
+            perror("read from file error");
+            exit(EXIT_FAILURE);
+        }
+
         close(fd[1]);
     }
 
