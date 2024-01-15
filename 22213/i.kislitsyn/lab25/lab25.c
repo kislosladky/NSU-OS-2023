@@ -13,7 +13,7 @@ int main()
     int status;
     size_t written = 0;
     pid_t pid;
-    char* msgout = "My messae";
+    char* msgout = "My message";
     char msgin[MSGSIZE];
 
     if (pipe(fd) == -1)
@@ -34,7 +34,6 @@ int main()
 
         do
         {
-
             if ((status = read(fd[0], msgin, MSGSIZE)) == -1)
             {
                 perror("Read failure");
