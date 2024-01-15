@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     int status;
     if (argc < 2)
     {
-        printf("No command passed\n");
+        fprintf(STDERR_FILENO, "No command passed\n");
         exit(EXIT_FAILURE);
     }
     switch (pid = fork())
