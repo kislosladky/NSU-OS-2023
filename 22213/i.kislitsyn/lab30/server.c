@@ -29,6 +29,7 @@ int main()
 
     if ((bind(fd, (struct sockaddr *)&addr, sizeof(addr))) < 0)
     {
+        close(fd);
         perror("Failed with binding");
         exit(EXIT_FAILURE);
     }
@@ -38,6 +39,7 @@ int main()
     {
         close(fd);
         perror("Listening failure");
+        unlink(SERVER_SOCK);
         exit(EXIT_FAILURE);
     }
 
@@ -46,8 +48,11 @@ int main()
     {
         close(fd);
         perror("Accept failed");
+        unlink(SERVER_SOCK);
         exit(EXIT_FAILURE);
     }
+
+    unlink(SERVER_SOCK);
 
     int len;
     while ((len = read(accepted, msg, MSGSIZE)) > 0)
@@ -79,6 +84,5 @@ int main()
     printf("Connection is closed\n");
     close(accepted);
     close(fd);
-    unlink(SERVER_SOCK);
     exit(EXIT_SUCCESS);
 }

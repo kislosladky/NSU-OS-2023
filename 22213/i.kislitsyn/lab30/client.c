@@ -13,14 +13,12 @@
 int fd = -1;
 
 void pipe_sig_handler();
-void int_sig_handler();
 
 int main()
 {
     struct sockaddr_un addr;
     char msg[MSGSIZE];
     signal(SIGPIPE, pipe_sig_handler);
-    signal(SIGINT, int_sig_handler);
 
     if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
     {
@@ -39,23 +37,37 @@ int main()
     }
 
     ssize_t red = 0;
-    while (1)
+    ssize_t sent;
+    ssize_t to_send;
+   
+    while ((red = read(STDIN_FILENO, msg, MSGSIZE)) > 0)
     {
-        if ((red = read(STDIN_FILENO, msg, MSGSIZE)) == -1)
+        
+        to_send = red < MSGSIZE ? red : MSGSIZE;
+        if ((sent = write(fd, msg, to_send)) != red)
         {
-            perror("Read to buffer failed");
+            fprintf(stderr, "Written not full message");
             close(fd);
             exit(EXIT_FAILURE);
         }
-        ssize_t to_send = red < MSGSIZE ? red : MSGSIZE;
+        if (sent == -1)
+        {
+            perror("Write error");
+            close(fd);
+            exit(EXIT_FAILURE);
+        }
 
-        if((write(fd, msg, to_send)) == -1)
-        {
-            perror("Write to server failed");
-            close(fd);
-            exit(EXIT_FAILURE);
-        }
     }
+
+    close(fd);
+
+    if (red == -1)
+    {
+        perror("Read to buffer failed");
+        exit(EXIT_FAILURE);
+    }
+
+    exit(EXIT_SUCCESS);
 }
 
 void pipe_sig_handler()
@@ -66,16 +78,5 @@ void pipe_sig_handler()
         write(STDERR_FILENO, "Writing to the server failure\n", 31);
     }
 
-    exit(EXIT_FAILURE);
-}
-
-void int_sig_handler()
-{
-    if (fd != -1)
-    {
-        close(fd);
-    }
-    write(STDOUT_FILENO, "\nTranslation is finished\n", 27);
-
-    exit(EXIT_SUCCESS);
+    _exit(EXIT_FAILURE);
 }
