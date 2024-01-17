@@ -85,7 +85,7 @@ int main()
 
         close(fd[1]);
 
-        if (waitpid(pid, 0, WUNTRACED) == -1) {
+        if (waitpid(pid, 0, 0) == -1) {
             perror("Wait error");
             close(fd[1]);
             exit(EXIT_FAILURE);
