@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <fcntl.h>
+#include <wait.h>
 
 #define BUFF_LEN 30
 
@@ -28,7 +29,7 @@ int main()
         close(fd[0]);
         close(fd[1]);
         exit(EXIT_FAILURE);
-    case 0:
+    case 0:  
         close(fd[1]);
 
         do
@@ -53,6 +54,7 @@ int main()
             }
 
         } while (status > 0);
+
         close(fd[0]);
         break;
     default:
@@ -82,6 +84,12 @@ int main()
         }
 
         close(fd[1]);
+
+        if (waitpid(pid, 0, WUNTRACED) == -1) {
+            perror("Wait error");
+            close(fd[1]);
+            exit(EXIT_FAILURE);
+        }
     }
 
     exit(EXIT_SUCCESS);
