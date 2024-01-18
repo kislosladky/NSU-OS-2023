@@ -4,16 +4,16 @@
 #include <ctype.h>
 #include <unistd.h>
 #include <string.h>
+#include <wait.h>
 
-#define MSGSIZE 23
+#define MSGSIZE 30
 
 int main()
 {
     int fd[2];
     int status;
     size_t written = 0;
-    pid_t pid;
-    char* msgout = "My message";
+    char *msgout = "My message";
     char msgin[MSGSIZE];
 
     if (pipe(fd) == -1)
@@ -22,6 +22,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    pid_t pid;
     switch (pid = fork())
     {
     case -1:
@@ -32,29 +33,31 @@ int main()
     case 0:
         close(fd[1]);
 
-        do
+        while ((status = read(fd[0], msgin, MSGSIZE)) > 0)
         {
-            if ((status = read(fd[0], msgin, MSGSIZE)) == -1)
-            {
-                perror("Read failure");
-                close(fd[0]);
-                exit(EXIT_FAILURE);
-            }
 
             for (int i = 0; i < status; i++)
             {
                 msgin[i] = toupper(msgin[i]);
             }
 
-            if ((write(0, msgin, status)) == -1)
+            if ((write(STDOUT_FILENO, msgin, status)) == -1)
             {
                 perror("Write failure");
                 close(fd[0]);
                 exit(EXIT_FAILURE);
             }
+        }
+        printf("\n");
 
-        } while (status > 0);
         close(fd[0]);
+
+        if (status == -1)
+        {
+            perror("Read failure");
+            exit(EXIT_FAILURE);
+        }
+
         break;
     default:
         close(fd[0]);
@@ -71,6 +74,12 @@ int main()
             written += MSGSIZE;
         }
         close(fd[1]);
+
+        if (waitpid(pid, 0, 0) == -1)
+        {
+            perror("Wait error");
+            exit(EXIT_FAILURE);
+        }
     }
 
     exit(EXIT_SUCCESS);
