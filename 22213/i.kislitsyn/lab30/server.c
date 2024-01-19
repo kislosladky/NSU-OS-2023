@@ -66,7 +66,6 @@ int main()
         {
             close(accepted);
             close(fd);
-            unlink(SERVER_SOCK);
             perror("Failed with writing");
             exit(EXIT_FAILURE);
         }
@@ -77,7 +76,6 @@ int main()
         perror("Failed with reading");
         close(fd);
         close(accepted);
-        unlink(SERVER_SOCK);
         exit(EXIT_FAILURE);
     }
 
