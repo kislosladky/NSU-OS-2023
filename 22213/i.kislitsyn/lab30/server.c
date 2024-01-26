@@ -25,7 +25,7 @@ int main()
     addr.sun_family = AF_UNIX;
     strcpy(addr.sun_path, SERVER_SOCK);
 
-    unlink(SERVER_SOCK);
+    // unlink(SERVER_SOCK);
 
     if ((bind(fd, (struct sockaddr *)&addr, sizeof(addr))) < 0)
     {

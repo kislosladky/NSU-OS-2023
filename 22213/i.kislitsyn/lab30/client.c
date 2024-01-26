@@ -12,7 +12,16 @@
 
 int fd = -1;
 
-void pipe_sig_handler();
+void pipe_sig_handler()
+{
+    if (fd != -1)
+    {
+        close(fd);
+        write(STDERR_FILENO, "Writing to the server failure\n", 31);
+    }
+
+    _exit(EXIT_FAILURE);
+}
 
 int main()
 {
@@ -70,13 +79,3 @@ int main()
     exit(EXIT_SUCCESS);
 }
 
-void pipe_sig_handler()
-{
-    if (fd != -1)
-    {
-        close(fd);
-        write(STDERR_FILENO, "Writing to the server failure\n", 31);
-    }
-
-    _exit(EXIT_FAILURE);
-}
