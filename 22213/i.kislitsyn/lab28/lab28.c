@@ -43,7 +43,7 @@ int main()
         }
         printf("\n");
     }
-    fclose(fptrs[1]);
+    pclose(fptrs[1]);
 
     exit(EXIT_SUCCESS);
 }
