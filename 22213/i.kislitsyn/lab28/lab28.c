@@ -30,7 +30,7 @@ int main()
             if (fgets(str, 4, fptrs[1]) == NULL)
             {
                 fprintf(stderr, "fgets error\n");
-                fclose(fptrs[1]);
+                pclose(fptrs[1]);
                 exit(EXIT_FAILURE);
             }
 
