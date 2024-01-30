@@ -31,7 +31,14 @@ int main(int argc, char *argv[])
         }
         else
         {
-            printf("\nThe code is %d\n", status);
+            if (WIFEXITED(status))
+            {
+                printf("Ended with status %d\n", WEXITSTATUS(status));
+            }
+            else
+            {
+                printf("Ended by signal %d\n", WTERMSIG(status));
+            }
         }
     }
     exit(EXIT_SUCCESS);
