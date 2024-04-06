@@ -52,7 +52,6 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    unlink(SERVER_SOCK);
 
     int len;
     while ((len = read(accepted, msg, MSGSIZE)) > 0)
