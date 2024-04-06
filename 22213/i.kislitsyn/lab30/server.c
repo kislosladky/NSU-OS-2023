@@ -24,7 +24,7 @@ int main()
     char msg[MSGSIZE];
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strcpy(addr.sun_path, server_sock);
+    strncpy(addr.sun_path, server_sock, sizeof(addr.sun_path) - 1);
 
     if ((bind(fd, (struct sockaddr *)&addr, sizeof(addr))) < 0)
     {

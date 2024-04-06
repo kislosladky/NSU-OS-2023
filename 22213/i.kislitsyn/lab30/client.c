@@ -7,7 +7,6 @@
 #include <signal.h>
 #include <string.h>
 
-
 #define MSGSIZE 20
 
 int fd = -1;
@@ -38,7 +37,7 @@ int main()
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strcpy(addr.sun_path, server_sock);
+    strncpy(addr.sun_path, server_sock, sizeof(addr.sun_path) - 1);
     if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         perror("Connection is failed");
@@ -52,7 +51,6 @@ int main()
    
     while ((red = read(STDIN_FILENO, msg, MSGSIZE)) > 0)
     {
-        
         to_send = red < MSGSIZE ? red : MSGSIZE;
         if ((sent = write(fd, msg, to_send)) != red)
         {
@@ -79,4 +77,3 @@ int main()
 
     exit(EXIT_SUCCESS);
 }
-
