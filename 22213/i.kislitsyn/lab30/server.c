@@ -8,7 +8,7 @@
 
 #define MSGSIZE 20
 
-const char *server_sock = "server.sock";
+const char *server_sock = "./server.sock";
 
 int main()
 {
