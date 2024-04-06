@@ -7,10 +7,11 @@
 #include <signal.h>
 #include <string.h>
 
-#define SERVER_SOCK "server.sock"
+
 #define MSGSIZE 20
 
 int fd = -1;
+const char *server_sock = "server.sock";
 
 void pipe_sig_handler()
 {
@@ -37,7 +38,7 @@ int main()
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strcpy(addr.sun_path, SERVER_SOCK);
+    strcpy(addr.sun_path, server_sock);
     if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         perror("Connection is failed");
