@@ -25,8 +25,6 @@ int main()
     addr.sun_family = AF_UNIX;
     strcpy(addr.sun_path, SERVER_SOCK);
 
-    // unlink(SERVER_SOCK);
-
     if ((bind(fd, (struct sockaddr *)&addr, sizeof(addr))) < 0)
     {
         close(fd);
@@ -43,6 +41,8 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    unlink(SERVER_SOCK);
+
     int accepted;
     if ((accepted = accept(fd, NULL, NULL)) == -1)
     {
@@ -52,7 +52,6 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    unlink(SERVER_SOCK);
 
     int len;
     while ((len = read(accepted, msg, MSGSIZE)) > 0)
