@@ -6,8 +6,9 @@
 #include <ctype.h>
 #include <string.h>
 
-#define SERVER_SOCK "server.sock"
 #define MSGSIZE 20
+
+const char *server_sock = "server.sock";
 
 int main()
 {
@@ -23,7 +24,7 @@ int main()
     char msg[MSGSIZE];
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strcpy(addr.sun_path, SERVER_SOCK);
+    strcpy(addr.sun_path, server_sock);
 
     if ((bind(fd, (struct sockaddr *)&addr, sizeof(addr))) < 0)
     {
@@ -37,18 +38,17 @@ int main()
     {
         close(fd);
         perror("Listening failure");
-        unlink(SERVER_SOCK);
+        unlink(server_sock);
         exit(EXIT_FAILURE);
     }
 
-    unlink(SERVER_SOCK);
+    unlink(server_sock);
 
     int accepted;
     if ((accepted = accept(fd, NULL, NULL)) == -1)
     {
         close(fd);
         perror("Accept failed");
-        unlink(SERVER_SOCK);
         exit(EXIT_FAILURE);
     }
 
