@@ -26,7 +26,7 @@ int main()
     addr.sun_family = AF_UNIX;
     strcpy(addr.sun_path, server_sock);
 
-    if ((bind(fd, &addr, sizeof(addr))) < 0)
+    if ((bind(fd, (struct sockaddr*)&addr, sizeof(addr))) < 0)
     {
         close(fd);
         perror("Binding failure");
