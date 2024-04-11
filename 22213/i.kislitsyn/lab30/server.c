@@ -24,12 +24,12 @@ int main()
     char msg[MSGSIZE];
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, server_sock, sizeof(addr.sun_path));
+    strcpy(addr.sun_path, server_sock);
 
-    if ((bind(fd, (struct sockaddr *)&addr, sizeof(addr))) < 0)
+    if ((bind(fd, &addr, sizeof(addr))) < 0)
     {
         close(fd);
-        perror("Failed with binding");
+        perror("Binding failure");
         exit(EXIT_FAILURE);
     }
 
@@ -49,12 +49,13 @@ int main()
     {
         close(fd);
         perror("Accept failed");
+        unlink(server_sock);
         exit(EXIT_FAILURE);
     }
 
     unlink(server_sock);
 
-    
+
     int len;
     while ((len = read(accepted, msg, MSGSIZE)) > 0)
     {

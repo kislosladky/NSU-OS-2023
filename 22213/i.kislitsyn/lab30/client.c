@@ -37,7 +37,7 @@ int main()
 
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, server_sock, sizeof(addr.sun_path) - 1);
+    strcpy(addr.sun_path, server_sock);
     if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         perror("Connection is failed");
