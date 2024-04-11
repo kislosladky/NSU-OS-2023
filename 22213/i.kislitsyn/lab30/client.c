@@ -10,7 +10,7 @@
 #define MSGSIZE 20
 
 int fd = -1;
-const char *server_sock = "./server.sock";
+const char *server_sock = "server.sock";
 
 void pipe_sig_handler()
 {

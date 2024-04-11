@@ -8,7 +8,7 @@
 
 #define MSGSIZE 20
 
-const char *server_sock = "./server.sock";
+char *server_sock = "server.sock";
 
 int main()
 {
@@ -24,7 +24,7 @@ int main()
     char msg[MSGSIZE];
     memset(&addr, 0, sizeof(addr));
     addr.sun_family = AF_UNIX;
-    strncpy(addr.sun_path, server_sock, sizeof(addr.sun_path) - 1);
+    strncpy(addr.sun_path, server_sock, sizeof(addr.sun_path));
 
     if ((bind(fd, (struct sockaddr *)&addr, sizeof(addr))) < 0)
     {
@@ -42,7 +42,7 @@ int main()
         exit(EXIT_FAILURE);
     }
 
-    unlink(server_sock);
+   
 
     int accepted;
     if ((accepted = accept(fd, NULL, NULL)) == -1)
@@ -52,7 +52,9 @@ int main()
         exit(EXIT_FAILURE);
     }
 
+    unlink(server_sock);
 
+    
     int len;
     while ((len = read(accepted, msg, MSGSIZE)) > 0)
     {
