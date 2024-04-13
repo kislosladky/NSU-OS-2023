@@ -47,12 +47,12 @@ int main()
 
     ssize_t red = 0;
     ssize_t sent;
-    ssize_t to_send;
+    // ssize_t to_send;
    
     while ((red = read(STDIN_FILENO, msg, MSGSIZE)) > 0)
     {
-        to_send = red < MSGSIZE ? red : MSGSIZE;
-        if ((sent = write(fd, msg, to_send)) != red)
+        // to_send = red < MSGSIZE ? red : MSGSIZE;
+        if ((sent = write(fd, msg, red)) != red)
         {
             fprintf(stderr, "Written not full message");
             close(fd);
