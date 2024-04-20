@@ -28,7 +28,6 @@ int main()
 
     if ((bind(fd, (struct sockaddr*)&addr, sizeof(addr))) < 0)
     {
-        close(fd);
         perror("Binding failure");
         exit(EXIT_FAILURE);
     }
@@ -36,7 +35,6 @@ int main()
 
     if (listen(fd, 1) < 0)
     {
-        close(fd);
         perror("Listening failure");
         unlink(server_sock);
         exit(EXIT_FAILURE);
@@ -47,7 +45,6 @@ int main()
     int accepted;
     if ((accepted = accept(fd, NULL, NULL)) == -1)
     {
-        close(fd);
         perror("Accept failed");
         unlink(server_sock);
         exit(EXIT_FAILURE);
@@ -66,8 +63,6 @@ int main()
 
         if ((write(STDOUT_FILENO, msg, len)) == -1)
         {
-            close(accepted);
-            close(fd);
             perror("Failed with writing");
             exit(EXIT_FAILURE);
         }
@@ -76,13 +71,9 @@ int main()
     if (len == -1)
     {
         perror("Failed with reading");
-        close(fd);
-        close(accepted);
         exit(EXIT_FAILURE);
     }
 
     printf("Connection is closed\n");
-    close(accepted);
-    close(fd);
     exit(EXIT_SUCCESS);
 }

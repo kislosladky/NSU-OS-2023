@@ -17,9 +17,9 @@ void pipe_sig_handler()
     if (fd != -1)
     {
         close(fd);
-        write(STDERR_FILENO, "Writing to the server failure\n", 31);
     }
 
+    write(STDERR_FILENO, "SIG_PIPE occured\n", 31);
     _exit(EXIT_FAILURE);
 }
 
@@ -41,35 +41,30 @@ int main()
     if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
         perror("Connection is failed");
-        close(fd);
         exit(EXIT_FAILURE);
     }
 
-    ssize_t red = 0;
+    ssize_t read_cnt = 0;
     ssize_t sent;
     // ssize_t to_send;
    
-    while ((red = read(STDIN_FILENO, msg, MSGSIZE)) > 0)
+    while ((read_cnt = read(STDIN_FILENO, msg, MSGSIZE)) > 0)
     {
-        // to_send = red < MSGSIZE ? red : MSGSIZE;
-        if ((sent = write(fd, msg, red)) != red)
+        if ((sent = write(fd, msg, read_cnt)) != read_cnt)
         {
             fprintf(stderr, "Written not full message");
-            close(fd);
             exit(EXIT_FAILURE);
         }
         if (sent == -1)
         {
             perror("Write error");
-            close(fd);
             exit(EXIT_FAILURE);
         }
 
     }
 
-    close(fd);
 
-    if (red == -1)
+    if (read_cnt == -1)
     {
         perror("Read to buffer failed");
         exit(EXIT_FAILURE);
