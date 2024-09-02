@@ -1,0 +1,74 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <sys/un.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <signal.h>
+#include <string.h>
+
+#define MSGSIZE 20
+
+int fd = -1;
+const char *server_sock = "server.sock";
+
+void pipe_sig_handler()
+{
+    if (fd != -1)
+    {
+        close(fd);
+    }
+
+    write(STDERR_FILENO, "SIG_PIPE occured\n", 31);
+    _exit(EXIT_FAILURE);
+}
+
+int main()
+{
+    struct sockaddr_un addr;
+    char msg[MSGSIZE];
+    signal(SIGPIPE, pipe_sig_handler);
+
+    if ((fd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0)
+    {
+        perror("Failed with socket creation");
+        exit(EXIT_FAILURE);
+    }
+
+    memset(&addr, 0, sizeof(addr));
+    addr.sun_family = AF_UNIX;
+    strcpy(addr.sun_path, server_sock);
+    if (connect(fd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+    {
+        perror("Connection is failed");
+        exit(EXIT_FAILURE);
+    }
+
+    ssize_t read_cnt = 0;
+    ssize_t sent;
+   
+    while ((read_cnt = read(STDIN_FILENO, msg, MSGSIZE)) > 0)
+    {
+        sent = write(fd, msg, read_cnt);
+        if (sent != read_cnt)
+        {
+            fprintf(stderr, "Written not full message");
+            exit(EXIT_FAILURE);
+        }
+        if (sent == -1)
+        {
+            perror("Write error");
+            exit(EXIT_FAILURE);
+        }
+
+    }
+
+
+    if (read_cnt == -1)
+    {
+        perror("Read to buffer failed");
+        exit(EXIT_FAILURE);
+    }
+
+    exit(EXIT_SUCCESS);
+}
